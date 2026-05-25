@@ -281,7 +281,8 @@ export default function ContactPage() {
 
             setSuccess(true);
             setForm(initialContactForm);
-        } catch {
+        } catch (error) {
+            console.error("Error submitting contact form", error);
             setError(t.form.errorSend);
         } finally {
             setIsSubmitting(false);
