@@ -1,0 +1,101 @@
+/* Animações - Classes */
+.star {
+    animation: starTwinkle var(--star-duration, 2s) ease-in-out infinite alternate;
+}
+
+.streak {
+    animation: streakMove var(--streak-duration, 0.8s) linear infinite;
+}
+
+.rocket {
+    animation: rocketLaunch 1.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.flame {
+    animation: flamePulse 0.18s ease-in-out infinite alternate;
+}
+
+.content {
+    animation: contentIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
+}
+
+.progress {
+    animation: progressFill 1.65s linear forwards;
+}
+
+/* Animação - Estrelas */
+@keyframes starTwinkle {
+    from {
+        opacity: 0.15;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1.25);
+    }
+}
+
+/* Animação - Rastos */
+@keyframes streakMove {
+    0% {
+        opacity: 0;
+        transform: translateX(60px);
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-240px);
+    }
+}
+
+/* Animação - Foguetão */
+@keyframes rocketLaunch {
+    0% {
+        opacity: 0;
+        transform: translateY(96px) scale(0.82) rotate(-4deg);
+    }
+
+    18% {
+        opacity: 1;
+    }
+
+    62% {
+        transform: translateY(-18px) scale(1.05) rotate(2deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(-44px) scale(1) rotate(0deg);
+    }
+}
+
+/* Animação - Chama */
+@keyframes flamePulse {
+    from {
+        transform: translateX(-50%) scaleX(1) scaleY(1);
+    }
+
+    to {
+        transform: translateX(-50%) scaleX(1.18) scaleY(1.25);
+    }
+}
+
+/* Animação - Entrada do conteúdo */
+@keyframes contentIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animação - Barra de progresso */
+@keyframes progressFill {
+    to {
+        width: 100%;
+    }
+}

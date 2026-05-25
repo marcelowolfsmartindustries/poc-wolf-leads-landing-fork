@@ -1,0 +1,243 @@
+.heroOrb {
+    width: 380px;
+    height: 380px;
+    border-radius: 9999px;
+    background:
+        radial-gradient(ellipse at 30% 30%,
+            rgba(123, 47, 190, 0.5),
+            rgba(199, 36, 177, 0.3) 50%,
+            transparent 70%);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: orbPulse 4s ease-in-out infinite;
+}
+
+.cursor {
+    width: 12px;
+    height: 12px;
+    background: var(--magenta-light);
+    border-radius: 9999px;
+    position: fixed;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+}
+
+.cursorRing {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(224, 64, 251, 0.5);
+    border-radius: 9999px;
+    position: fixed;
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s;
+}
+
+.customCursorActive,
+.customCursorActive * {
+    cursor: none !important;
+}
+
+.orbInner {
+    width: 260px;
+    height: 260px;
+    border-radius: 9999px;
+    border: 1px solid rgba(224, 64, 251, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.orbRing {
+    position: absolute;
+    border: 1px dashed rgba(168, 85, 247, 0.25);
+    border-radius: 9999px;
+    animation: orbRotate 15s linear infinite;
+}
+
+.orbRing:first-child {
+    width: 420px;
+    height: 420px;
+}
+
+.orbRing:nth-child(2) {
+    width: 460px;
+    height: 460px;
+    animation-duration: 22s;
+    animation-direction: reverse;
+}
+
+@keyframes orbPulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 60px rgba(123, 47, 190, 0.3),
+            0 0 120px rgba(199, 36, 177, 0.12);
+    }
+
+    50% {
+        box-shadow:
+            0 0 80px rgba(123, 47, 190, 0.5),
+            0 0 160px rgba(199, 36, 177, 0.22);
+    }
+}
+
+@keyframes orbRotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.heroGridLines {
+    background-image:
+        linear-gradient(rgba(168, 85, 247, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168, 85, 247, 0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+}
+
+@media (hover: none),
+(pointer: coarse) {
+
+    .cursor,
+    .cursorRing {
+        display: none !important;
+    }
+}
+
+@media (max-width: 960px) {
+    .heroOrb {
+        width: 220px;
+        height: 220px;
+    }
+
+    .orbInner {
+        width: 160px;
+        height: 160px;
+    }
+
+    .orbRing:first-child {
+        width: 250px;
+        height: 250px;
+    }
+
+    .orbRing:nth-child(2) {
+        width: 280px;
+        height: 280px;
+    }
+}
+
+@media (max-width: 600px) {
+    .heroOrb {
+        width: 180px;
+        height: 180px;
+    }
+
+    .orbInner {
+        width: 130px;
+        height: 130px;
+    }
+
+    .orbRing:first-child {
+        width: 200px;
+        height: 200px;
+    }
+
+    .orbRing:nth-child(2) {
+        width: 230px;
+        height: 230px;
+    }
+}
+
+.heroWolfFloat {
+    animation: wolfFloat 3.2s ease-in-out infinite;
+    will-change: transform;
+}
+
+@keyframes wolfFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-18px);
+    }
+}
+
+.heroWolf {
+    position: relative;
+    z-index: 10;
+    transform-origin: 50% 82%;
+    animation: wolfIdleFloat 4s ease-in-out infinite;
+    transition: filter 0.35s ease;
+    will-change: transform, filter;
+}
+
+.heroWolf:hover {
+    animation:
+        wolfSideShake 1.05s ease-in-out 1,
+        wolfHoverFloat 2.8s ease-in-out 1.05s infinite;
+    filter:
+        drop-shadow(0 0 36px rgba(224, 64, 251, 0.8)) drop-shadow(0 0 70px rgba(123, 47, 190, 0.4));
+}
+
+@keyframes wolfIdleFloat {
+
+    0%,
+    100% {
+        transform: translateX(0) translateY(0) scale(1) rotate(0deg);
+    }
+
+    50% {
+        transform: translateX(0) translateY(-10px) scale(1.01) rotate(0.4deg);
+    }
+}
+
+@keyframes wolfSideShake {
+    0% {
+        transform: translateX(0) translateY(0) scale(1) rotate(0deg);
+    }
+
+    20% {
+        transform: translateX(-12px) translateY(-4px) scale(1.03) rotate(-2.5deg);
+    }
+
+    40% {
+        transform: translateX(12px) translateY(-8px) scale(1.04) rotate(2.5deg);
+    }
+
+    60% {
+        transform: translateX(-7px) translateY(-10px) scale(1.035) rotate(-1.5deg);
+    }
+
+    80% {
+        transform: translateX(5px) translateY(-12px) scale(1.035) rotate(1deg);
+    }
+
+    100% {
+        transform: translateX(0) translateY(-12px) scale(1.03) rotate(0deg);
+    }
+}
+
+@keyframes wolfHoverFloat {
+
+    0%,
+    100% {
+        transform: translateX(0) translateY(-12px) scale(1.03) rotate(0deg);
+    }
+
+    50% {
+        transform: translateX(0) translateY(-20px) scale(1.04) rotate(0.5deg);
+    }
+}

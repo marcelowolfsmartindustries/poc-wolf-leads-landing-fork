@@ -1,0 +1,118 @@
+/* Página - Base */
+.pageRoot {
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* Cursor personalizado */
+.cursor {
+    width: 12px;
+    height: 12px;
+    background: var(--magenta-light);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+}
+
+.cursorRing {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(224, 64, 251, 0.5);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s ease-out;
+}
+
+.customCursorActive,
+.customCursorActive * {
+    cursor: none !important;
+}
+
+:global([data-theme="dark"]) .cursor {
+    mix-blend-mode: screen;
+}
+
+:global([data-theme="light"]) .cursor {
+    mix-blend-mode: multiply;
+}
+
+/* Hero - Fundo */
+.docHero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg,
+            var(--bg) 0%,
+            var(--bg-alt) 50%,
+            var(--bg) 100%);
+}
+
+.docHero::before {
+    content: "";
+    position: absolute;
+    top: -40%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(ellipse,
+            rgba(123, 47, 190, 0.25) 0%,
+            transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.docHero::after {
+    content: "";
+    position: absolute;
+    bottom: -30%;
+    left: -5%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(ellipse,
+            rgba(199, 36, 177, 0.15) 0%,
+            transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* Hero - Entrada */
+.docHeroInner {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+/* Caixas de conteúdo */
+.highlightBox {
+    background: rgba(224, 64, 251, 0.1);
+    border-left: 4px solid var(--magenta-light);
+}
+
+.warningBox {
+    background: rgba(255, 190, 80, 0.1);
+    border-left: 4px solid #fbbf24;
+}
+
+/* Keyframes - Fade In Up */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (hover: none),
+(pointer: coarse) {
+
+    .cursor,
+    .cursorRing {
+        display: none !important;
+    }
+}
