@@ -3,6 +3,7 @@ import { Syne } from "next/font/google";
 import Script from "next/script";
 import RocketTransitionProvider from "./components/rocketOverlay/rocketTransitionProvider";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next"
 
 const syne = Syne({
   subsets: ["latin"],
@@ -123,6 +124,7 @@ export default function RootLayout({
             }),
           }}
         />
+        <Analytics />    
         <RocketTransitionProvider>{children}</RocketTransitionProvider>
       </body>
     </html>
