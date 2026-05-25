@@ -261,7 +261,12 @@ export default function ContactPage() {
         setIsSubmitting(true);
 
         try {
+
+            console.log("Requesting reCAPTCHA token...");
+
             const recaptchaToken = await getRecaptchaToken();
+
+            console.log("Received reCAPTCHA token:", recaptchaToken);
 
             const response = await fetch("/api/contact", {
                 method: "POST",
