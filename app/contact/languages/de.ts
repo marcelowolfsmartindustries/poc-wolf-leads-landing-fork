@@ -14,9 +14,9 @@ export const de = {
 
     hero: {
         tag: "Nächster Schritt",
-        title1: "Bereit, Ihr Unternehmen voranzubringen",
-        title2: "für den",
-        titleAccent: "die nächste Stufe?",
+        title1: "Bereit, Ihr Unternehmen",
+        title2: "auf das nächste",
+        titleAccent: "Level zu bringen?",
         description: "Sprechen Sie mit uns und erfahren Sie, wie wir die ideale Lösung für Ihr Unternehmen entwickeln können. Ganz unverbindlich.",
     },
 

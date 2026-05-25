@@ -181,6 +181,7 @@ export function getStoredTheme(): Theme {
     const savedTheme = localStorage.getItem(STORAGE_KEYS.theme);
 
     if (isTheme(savedTheme)) {
+        document.cookie = `${STORAGE_KEYS.theme}=${savedTheme}; path=/; max-age=31536000; SameSite=Lax`;
         return savedTheme;
     }
 
@@ -197,6 +198,8 @@ export function applyTheme(theme: Theme): void {
     if (typeof localStorage !== "undefined") {
         localStorage.setItem(STORAGE_KEYS.theme, theme);
     }
+
+    document.cookie = `${STORAGE_KEYS.theme}=${theme}; path=/; max-age=31536000; SameSite=Lax`;
 }
 
 export function applyLanguage(language: Language): void {

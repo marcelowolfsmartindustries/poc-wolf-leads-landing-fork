@@ -85,6 +85,7 @@ export function getStoredTheme(): Theme {
     const storedTheme = localStorage.getItem("wsi_theme");
 
     if (storedTheme === "light" || storedTheme === "dark") {
+        document.cookie = `wsi_theme=${storedTheme}; path=/; max-age=31536000; SameSite=Lax`;
         return storedTheme;
     }
 
@@ -94,6 +95,7 @@ export function getStoredTheme(): Theme {
 export function applyTheme(theme: Theme): void {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("wsi_theme", theme);
+    document.cookie = `wsi_theme=${theme}; path=/; max-age=31536000; SameSite=Lax`;
 }
 
 export function toggleThemeValue(theme: Theme): Theme {

@@ -78,7 +78,11 @@ export default function ContactPage() {
     const cursorRef = useRef<HTMLDivElement | null>(null);
     const cursorRingRef = useRef<HTMLDivElement | null>(null);
 
-    const [theme, setTheme] = useState<Theme>(getStoredTheme);
+    const [theme, setTheme] = useState<Theme>("dark");
+
+    useEffect(() => {
+        setTheme(getStoredTheme());
+    }, []);
     const [activeLanguage, setActiveLanguage] = useState<Language>(DEFAULT_LANGUAGE);
     const [isLanguageReady, setIsLanguageReady] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -167,10 +171,6 @@ export default function ContactPage() {
     }, []);
 
     useEffect(() => {
-        applyTheme(theme);
-    }, [theme]);
-
-    useEffect(() => {
         if (!isLanguageReady) return;
 
         document.documentElement.lang = activeLanguage;
@@ -218,7 +218,11 @@ export default function ContactPage() {
     }, [isCustomCursorEnabled]);
 
     function handleThemeToggle() {
-        setTheme((currentTheme) => toggleThemeValue(currentTheme));
+        setTheme((currentTheme) => {
+            const next = toggleThemeValue(currentTheme);
+            applyTheme(next);
+            return next;
+        });
     }
 
     function handleLanguageChange(language: Language) {
@@ -337,13 +341,16 @@ export default function ContactPage() {
                         {t.hero.tag}
                     </span>
 
-                    <h1 className="mb-6 font-(--font-orbitron) text-[clamp(1.8rem,6vw,5rem)] leading-[1.1] text-(--text)">
-                        {t.hero.title1}{" "}
-                        {t.hero.title2}
-                        <span className="mt-2 block md:mt-4">
-                            <span className="inline-block bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text px-2 pb-2 text-transparent sm:whitespace-nowrap">
-                                {t.hero.titleAccent}
-                            </span>
+                    <h1
+                        className={`mb-6 w-full font-(--font-orbitron) leading-[1.2] tracking-tight text-(--text) ${activeLanguage === "de"
+                            ? "text-[clamp(0.9rem,4vw,3.5rem)] md:text-[clamp(1.8rem,3.5vw,5rem)]"
+                            : "text-[clamp(1rem,5vw,3.5rem)] md:text-[clamp(2.2rem,4vw,5rem)]"
+                            }`}
+                    >
+                        <span className="block whitespace-nowrap">{t.hero.title1}</span>
+                        <span className="block whitespace-nowrap text-(--text-muted)">{t.hero.title2}</span>
+                        <span className="block whitespace-nowrap bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text pb-2 text-transparent">
+                            {t.hero.titleAccent}
                         </span>
                     </h1>
 

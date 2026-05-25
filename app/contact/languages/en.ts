@@ -14,8 +14,8 @@ export const en = {
 
     hero: {
         tag: "Next Step",
-        title1: "Ready to take your business",
-        title2: "to the",
+        title1: "Ready to take",
+        title2: "your business to the",
         titleAccent: "next level?",
         description: "Contact us to find out how we can create the ideal solution for your business. No obligation.",
     },

@@ -34,6 +34,10 @@ body {
   --footer-bg: #060608;
   --form-bg: #0d0d12;
   --input-bg: #12121a;
+
+  --rocket-overlay-bg: radial-gradient(ellipse at 50% 62%, #12001f 0%, #060608 62%, #000 100%);
+  --rocket-star-bg: #ffffff;
+  --rocket-streak-to: rgba(255, 255, 255, 0.7);
 }
 
 [data-theme="light"] {
@@ -50,6 +54,10 @@ body {
   --footer-bg: #ebe6ff;
   --form-bg: #ebe6ff;
   --input-bg: #ffffff;
+
+  --rocket-overlay-bg: radial-gradient(ellipse at 50% 62%, #fff 0%, #f4f1ff 55%, #ebe6ff 100%);
+  --rocket-star-bg: var(--purple);
+  --rocket-streak-to: var(--purple-light);
 }
 
 /* Tooltip Leaflet - Container principal */

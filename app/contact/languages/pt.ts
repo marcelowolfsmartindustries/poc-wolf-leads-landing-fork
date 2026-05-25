@@ -14,8 +14,8 @@ export const pt = {
 
     hero: {
         tag: "Próximo Passo",
-        title1: "Pronto para levar o seu negócio",
-        title2: "para o",
+        title1: "Pronto para levar",
+        title2: "o seu negócio para o",
         titleAccent: "próximo nível?",
         description: "Fale connosco e descubra como podemos criar a solução ideal para o seu negócio. Sem compromisso.",
     },

@@ -32,7 +32,11 @@ import {
 import { TriangleAlert } from "lucide-react";
 
 export default function TermsPage() {
-    const [theme, setTheme] = useState<Theme>(getStoredTheme);
+    const [theme, setTheme] = useState<Theme>("dark");
+
+    useEffect(() => {
+        setTheme(getStoredTheme());
+    }, []);
     const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
     const [isLanguageReady, setIsLanguageReady] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -69,10 +73,6 @@ export default function TermsPage() {
             setIsLanguageReady(true);
         });
     }, []);
-
-    useEffect(() => {
-        applyTheme(theme);
-    }, [theme]);
 
     useEffect(() => {
         if (!isLanguageReady) return;
@@ -122,7 +122,11 @@ export default function TermsPage() {
     }, [isCustomCursorEnabled]);
 
     function handleThemeToggle() {
-        setTheme((currentTheme) => toggleThemeValue(currentTheme));
+        setTheme((currentTheme) => {
+            const next = toggleThemeValue(currentTheme);
+            applyTheme(next);
+            return next;
+        });
     }
 
     function handleLanguageChange(nextLanguage: Language) {

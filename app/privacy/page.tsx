@@ -37,7 +37,7 @@ type PrivacyListItem = {
 
 export default function PrivacyPage() {
     const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
-    const [theme, setTheme] = useState<Theme>(getStoredTheme);
+    const [theme, setTheme] = useState<Theme>("dark");
     const [isLanguageReady, setIsLanguageReady] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isCustomCursorEnabled, setIsCustomCursorEnabled] = useState(false);
@@ -75,8 +75,8 @@ export default function PrivacyPage() {
     }, []);
 
     useEffect(() => {
-        applyTheme(theme);
-    }, [theme]);
+        setTheme(getStoredTheme());
+    }, []);
 
     useEffect(() => {
         if (!isLanguageReady) return;
@@ -130,7 +130,11 @@ export default function PrivacyPage() {
     }
 
     function handleThemeToggle() {
-        setTheme((currentTheme) => toggleThemeValue(currentTheme));
+        setTheme((currentTheme) => {
+            const next = toggleThemeValue(currentTheme);
+            applyTheme(next);
+            return next;
+        });
     }
 
     function closeMobileMenu() {

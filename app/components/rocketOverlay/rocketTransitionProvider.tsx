@@ -79,12 +79,20 @@ function getNavigationIntent(anchor: HTMLAnchorElement, event: MouseEvent) {
 export default function RocketTransitionProvider({ children }: RocketTransitionProviderProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const [isActive, setIsActive] = useState(false);
+    const [isActive, setIsActive] = useState(true);
     const [language, setLanguage] = useState<RocketOverlayLanguage>("pt");
     const [theme, setTheme] = useState<Theme>("dark");
     const isActiveRef = useRef(false);
     const previousPathnameRef = useRef(pathname);
     const targetHrefRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        const timeout = window.setTimeout(() => {
+            setIsActive(false);
+        }, transitionDurationMs);
+
+        return () => window.clearTimeout(timeout);
+    }, []);
 
     useEffect(() => {
         queueMicrotask(() => {
@@ -167,7 +175,6 @@ export default function RocketTransitionProvider({ children }: RocketTransitionP
             <RocketOverlay
                 isActive={isActive}
                 language={language}
-                theme={theme}
                 onFinish={handleFinish}
                 durationMs={transitionDurationMs}
             />

@@ -44,7 +44,11 @@ export default function WolfSmartLandingPage() {
     const cursorRef = useRef<HTMLDivElement | null>(null);
     const cursorRingRef = useRef<HTMLDivElement | null>(null);
 
-    const [theme, setTheme] = useState<"dark" | "light">(getStoredTheme);
+    const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+    useEffect(() => {
+        setTheme(getStoredTheme());
+    }, []);
     const [activeLanguage, setActiveLanguage] = useState<Language>(defaultLanguage);
     const [isLanguageReady, setIsLanguageReady] = useState(false);
     const [isCustomCursorEnabled, setIsCustomCursorEnabled] = useState(false);
@@ -174,10 +178,6 @@ export default function WolfSmartLandingPage() {
     }, []);
 
     useEffect(() => {
-        applyTheme(theme);
-    }, [theme]);
-
-    useEffect(() => {
         if (!isLanguageReady) return;
 
         document.documentElement.lang = activeLanguage;
@@ -282,6 +282,7 @@ export default function WolfSmartLandingPage() {
         const nextTheme = toggleThemeValue(theme);
 
         setTheme(nextTheme);
+        applyTheme(nextTheme);
     }
 
     function handleLanguageChange(language: Language) {
@@ -379,16 +380,14 @@ export default function WolfSmartLandingPage() {
                     </div>
 
                     <h1
-                        className={`mx-auto mb-6 max-w-190 font-(--font-orbitron) leading-[1.05] tracking-tight lg:mx-0 lg:max-w-205 ${activeLanguage === "de"
-                            ? "text-[clamp(2.1rem,7.8vw,4.2rem)] lg:text-[clamp(3.1rem,4.2vw,5rem)]"
-                            : "text-[clamp(2.7rem,10vw,4.4rem)] lg:text-[clamp(3.8rem,5.8vw,6rem)]"
+                        className={`mx-auto mb-6 w-full font-(--font-orbitron) leading-[1.05] tracking-tight lg:mx-0 ${activeLanguage === "de"
+                            ? "text-[clamp(1.8rem,6.5vw,2.8rem)] lg:text-[clamp(2rem,2.5vw,3.2rem)]"
+                            : "text-[clamp(2.2rem,8.5vw,3.5rem)] lg:text-[clamp(2.2rem,3.2vw,4rem)]"
                             }`}
                     >
-                        {t.hero.title1}
-                        <br />
-                        {t.hero.title2}
-                        <br />
-                        <span className="bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text text-transparent">
+                        <span className="block">{t.hero.title1}</span>
+                        <span className="block">{t.hero.title2}</span>
+                        <span className="block bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text text-transparent">
                             {t.hero.title3}
                         </span>
                     </h1>

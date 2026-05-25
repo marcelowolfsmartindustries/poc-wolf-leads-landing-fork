@@ -38,7 +38,6 @@ const texts = {
 export default function RocketOverlay({
     isActive,
     language = "pt",
-    theme = "dark",
     onFinish,
     durationMs = 1700,
     wolfImageSrc = "/images/logos/lobo_roxo_wolfSmartIndustries.webp",
@@ -85,22 +84,16 @@ export default function RocketOverlay({
         return () => window.clearTimeout(timeout);
     }, [durationMs, isActive, onFinish]);
 
-    const isLightTheme = theme === "light";
-
     return (
         <div
             aria-hidden={!isActive}
-            data-theme={theme}
-            className={`fixed inset-0 z-99999 flex cursor-none flex-col items-center justify-center overflow-hidden px-6 text-center transition-opacity duration-300 ${isLightTheme
-                ? "bg-[radial-gradient(ellipse_at_50%_62%,#fff_0%,#f4f1ff_55%,#ebe6ff_100%)]"
-                : "bg-[radial-gradient(ellipse_at_50%_62%,#12001f_0%,#060608_62%,#000_100%)]"
-                } ${isActive ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
+            className={`bg-(image:--rocket-overlay-bg) fixed inset-0 z-99999 flex cursor-none flex-col items-center justify-center overflow-hidden px-6 text-center transition-opacity duration-300 ${isActive ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
         >
             <div className="absolute inset-0 overflow-hidden">
                 {stars.map((star) => (
                     <span
                         key={star.id}
-                        className={`${styles.star} absolute rounded-full ${isLightTheme ? "bg-(--purple)" : "bg-white"}`}
+                        className={`${styles.star} absolute rounded-full bg-(--rocket-star-bg)`}
                         style={
                             {
                                 left: star.left,
@@ -116,7 +109,7 @@ export default function RocketOverlay({
                 {streaks.map((streak) => (
                     <span
                         key={streak.id}
-                        className={`${styles.streak} absolute h-0.5 rounded-full bg-linear-to-r from-transparent opacity-0 ${isLightTheme ? "to-(--purple-light)" : "to-white/70"}`}
+                        className={`${styles.streak} absolute h-0.5 rounded-full bg-linear-to-r from-transparent to-(--rocket-streak-to) opacity-0`}
                         style={
                             {
                                 left: streak.left,

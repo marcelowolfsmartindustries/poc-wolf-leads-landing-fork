@@ -153,7 +153,10 @@ export function getStoredTheme(): Theme {
 
     const storedTheme = localStorage.getItem(STORAGE_KEYS.theme);
 
-    if (isTheme(storedTheme)) return storedTheme;
+    if (isTheme(storedTheme)) {
+        document.cookie = `${STORAGE_KEYS.theme}=${storedTheme}; path=/; max-age=31536000; SameSite=Lax`;
+        return storedTheme;
+    }
 
     return DEFAULT_THEME;
 }
@@ -163,6 +166,7 @@ export function applyTheme(theme: Theme): void {
 
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem(STORAGE_KEYS.theme, theme);
+    document.cookie = `${STORAGE_KEYS.theme}=${theme}; path=/; max-age=31536000; SameSite=Lax`;
 }
 
 export function applyLanguage(language: Language): void {

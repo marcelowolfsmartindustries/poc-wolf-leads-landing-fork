@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Syne } from "next/font/google";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import RocketTransitionProvider from "./components/rocketOverlay/rocketTransitionProvider";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/next"
-import { SpeedInsights } from "@vercel/speed-insights/next"
-
 
 const syne = Syne({
   subsets: ["latin"],
@@ -13,81 +13,28 @@ const syne = Syne({
   weight: ["400", "600", "700", "800"],
 });
 
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
+const baseUrl = "https://softwaresolutions.wolfsmartindustries.com";
+const siteName = "Wolf Smart Industries";
+const ogImage = "/images/logos/lobo_roxo_wolfSmartIndustries.webp";
 
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
+type Theme = "dark" | "light";
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://softwaresolutions.wolfsmartindustries.com"),
-  title: {
-    default: "Wolf Smart Industries | Software à Medida para o Seu Negócio",
-    template: "%s | Wolf Smart Industries",
-  },
-  description:
-    "Criamos software personalizado, automação, web e apps mobile para empresas em Portugal e Europa. Mais produtividade, menos erros e crescimento escalável.",
-  keywords: [
-    "software à medida",
-    "desenvolvimento software Portugal",
-    "automação empresarial",
-    "web apps",
-    "mobile apps",
-    "inteligência artificial",
-    "cloud",
-    "Wolf Smart Industries",
-  ],
-  authors: [{ name: "Wolf Smart Industries" }],
-  creator: "Wolf Smart Industries",
-  publisher: "Wolf Smart Industries",
-  robots: {
-    index: true,
-    follow: true,
-  },
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    type: "website",
-    locale: "pt_PT",
-    url: "/",
-    siteName: "Wolf Smart Industries",
-    title: "Wolf Smart Industries | Software à Medida para o Seu Negócio",
-    description:
-      "Criamos software personalizado, automação, web e apps mobile para empresas em Portugal e Europa. Mais produtividade, menos erros e crescimento escalável.",
-    images: [
-      {
-        url: "/images/logos/lobo_roxo_wolfSmartIndustries.webp",
-        width: 1200,
-        height: 630,
-        alt: "Wolf Smart Industries",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Wolf Smart Industries | Software à Medida para o Seu Negócio",
-    description:
-      "Criamos software personalizado, automação, web e apps mobile para empresas em Portugal e Europa.",
-    images: ["/images/logos/lobo_roxo_wolfSmartIndustries.webp"],
-  },
-};
+async function getInitialTheme(): Promise<Theme> {
+  const cookieStore = await cookies();
+  const theme = cookieStore.get("wsi_theme")?.value;
 
-export default function RootLayout({
+  return theme === "light" || theme === "dark" ? theme : "dark";
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialTheme = await getInitialTheme();
+
   return (
-    <html
-      lang="pt"
-      suppressHydrationWarning
-      data-theme="dark"
-    >
+    <html lang="pt" data-theme={initialTheme} suppressHydrationWarning>
       <body suppressHydrationWarning className={syne.variable}>
         <Script
           id="theme-init"
@@ -104,11 +51,11 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "Wolf Smart Industries",
-              url: "https://softwaresolutions.wolfsmartindustries.com",
-              logo: "https://softwaresolutions.wolfsmartindustries.com/images/logos/lobo_roxo_wolfSmartIndustries.webp",
+              name: siteName,
+              url: baseUrl,
+              logo: `${baseUrl}${ogImage}`,
               description:
-                "Empresa portuguesa de engenharia de software premium. Criamos soluções digitais à medida para empresas em Portugal e Europa.",
+                "Portuguese premium software engineering company creating custom digital solutions for businesses in Portugal and Europe.",
               foundingDate: "2021",
               address: {
                 "@type": "PostalAddress",
@@ -117,7 +64,7 @@ export default function RootLayout({
               contactPoint: {
                 "@type": "ContactPoint",
                 contactType: "customer service",
-                url: "https://softwaresolutions.wolfsmartindustries.com/contact",
+                url: `${baseUrl}/contact`,
               },
               sameAs: [
                 "https://www.linkedin.com/company/wolf-smart-industries",
@@ -126,8 +73,8 @@ export default function RootLayout({
             }),
           }}
         />
-        <Analytics />  
-        <SpeedInsights />  
+        <Analytics />
+        <SpeedInsights />
         <RocketTransitionProvider>{children}</RocketTransitionProvider>
       </body>
     </html>
