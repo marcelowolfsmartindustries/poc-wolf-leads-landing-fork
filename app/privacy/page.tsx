@@ -185,7 +185,7 @@ export default function PrivacyPage() {
             <main>
                 <section className={`${styles.docHero} flex min-h-[65vh] items-center justify-center px-[clamp(1.5rem,6vw,4rem)] pb-16 pt-52 max-[768px]:min-h-[50vh] max-[768px]:pb-12 max-[768px]:pt-40 max-[600px]:min-h-0 max-[600px]:px-[clamp(1rem,5vw,2rem)] max-[600px]:pb-8 max-[600px]:pt-28`}>
                     <div className={`${styles.docHeroInner} relative z-10 max-w-225 text-center`} >
-                        <span className="mb-8 inline-block rounded-full border border-[rgba(224,64,251,0.3)] bg-[rgba(224,64,251,0.05)] px-[1.2rem] py-[0.35rem] text-sm uppercase text-(--magenta-light) max-[600px]:text-[0.6rem]">
+                        <span className="mb-8 inline-flex items-center justify-center rounded-full border border-[rgba(224,64,251,0.3)] bg-[rgba(224,64,251,0.05)] px-[1.2rem] py-[0.35rem] text-center text-sm font-bold uppercase tracking-[0.08em] text-(--magenta-light) max-[600px]:px-3 max-[600px]:py-1 max-[600px]:text-xs max-[600px]:tracking-[0.06em]">
                             {t.hero.tag}
                         </span>
 

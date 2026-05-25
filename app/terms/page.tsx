@@ -181,7 +181,7 @@ export default function TermsPage() {
             <section className={`${styles.docHero} mt-20 flex min-h-[65vh] items-center justify-center px-[clamp(1.5rem,6vw,4rem)] pb-16 pt-32`} >
                 <div className={`${styles.docHeroInner} relative z-10 max-w-225 text-center`}>
                     <span className="mb-8 inline-block rounded-full border border-[rgba(224,64,251,0.3)] bg-[rgba(224,64,251,0.05)] px-5 py-1.5 font-(--font-orbitron) text-sm uppercase text-(--magenta-light)">
-                        {t.hero.tag}
+                        <strong>{t.hero.tag}</strong>
                     </span>
 
                     <h1 className="mb-6 font-(--font-orbitron) text-[clamp(2.2rem,5vw,4rem)] leading-[1.1] tracking-[-0.02em] text-(--text)">

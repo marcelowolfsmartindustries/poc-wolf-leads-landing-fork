@@ -105,7 +105,7 @@ export default function SiteFooter({
                         language={activeLanguage}
                         className="mb-5 block bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text font-(--font-orbitron) text-xl text-transparent no-underline"
                     >
-                        Wolf Smart Industries
+                        <strong>Wolf Smart Industries</strong>
                     </FooterLink>
 
                     <p className="mb-4 text-sm text-(--text-muted)">

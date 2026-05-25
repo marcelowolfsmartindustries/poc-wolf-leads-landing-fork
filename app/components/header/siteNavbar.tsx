@@ -107,9 +107,11 @@ export default function SiteNavbar<TLanguage extends string = string>({
                     language={activeLanguage}
                     onClick={onMobileMenuClose}
                 >
-                    <span className="bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text font-(--font-orbitron) text-2xl text-transparent">
-                        Wolf Smart Industries
-                    </span>
+                    <strong>
+                        <span className="bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text font-(--font-orbitron) text-2xl text-transparent">
+                            Wolf Smart Industries
+                        </span>
+                    </strong>
 
                     <span className="font-(--font-orbitron) text-sm uppercase text-(--text-muted)">
                         Software Solutions

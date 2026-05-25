@@ -43,11 +43,20 @@ const defaultLanguage: Language = "pt";
 export default function WolfSmartLandingPage() {
     const cursorRef = useRef<HTMLDivElement | null>(null);
     const cursorRingRef = useRef<HTMLDivElement | null>(null);
+    const cursorFrameRef = useRef<number | null>(null);
+    const cursorPositionRef = useRef({
+        x: 0,
+        y: 0,
+        ringX: 0,
+        ringY: 0,
+    });
 
     const [theme, setTheme] = useState<"dark" | "light">("dark");
 
     useEffect(() => {
-        setTheme(getStoredTheme());
+        queueMicrotask(() => {
+            setTheme(getStoredTheme());
+        });
     }, []);
     const [activeLanguage, setActiveLanguage] = useState<Language>(defaultLanguage);
     const [isLanguageReady, setIsLanguageReady] = useState(false);
@@ -257,24 +266,59 @@ export default function WolfSmartLandingPage() {
     useEffect(() => {
         if (!isCustomCursorEnabled) return;
 
-        function handleMouseMove(event: MouseEvent) {
+        function updateCursor() {
+            cursorFrameRef.current = null;
+
+            const position = cursorPositionRef.current;
+
+            position.ringX += (position.x - position.ringX) * 0.18;
+            position.ringY += (position.y - position.ringY) * 0.18;
+
             if (cursorRef.current) {
-                cursorRef.current.style.left = `${event.clientX}px`;
-                cursorRef.current.style.top = `${event.clientY}px`;
+                cursorRef.current.style.transform = `translate3d(${position.x}px, ${position.y}px, 0) translate(-50%, -50%)`;
             }
 
-            window.setTimeout(() => {
-                if (cursorRingRef.current) {
-                    cursorRingRef.current.style.left = `${event.clientX}px`;
-                    cursorRingRef.current.style.top = `${event.clientY}px`;
-                }
-            }, 80);
+            if (cursorRingRef.current) {
+                cursorRingRef.current.style.transform = `translate3d(${position.ringX}px, ${position.ringY}px, 0) translate(-50%, -50%)`;
+            }
+
+            if (
+                Math.abs(position.x - position.ringX) > 0.1 ||
+                Math.abs(position.y - position.ringY) > 0.1
+            ) {
+                cursorFrameRef.current = window.requestAnimationFrame(updateCursor);
+            }
+        }
+
+        function scheduleCursorUpdate() {
+            if (cursorFrameRef.current !== null) return;
+
+            cursorFrameRef.current = window.requestAnimationFrame(updateCursor);
+        }
+
+        function handleMouseMove(event: MouseEvent) {
+            const position = cursorPositionRef.current;
+
+            position.x = event.clientX;
+            position.y = event.clientY;
+
+            if (position.ringX === 0 && position.ringY === 0) {
+                position.ringX = event.clientX;
+                position.ringY = event.clientY;
+            }
+
+            scheduleCursorUpdate();
         }
 
         document.addEventListener("mousemove", handleMouseMove);
 
         return () => {
             document.removeEventListener("mousemove", handleMouseMove);
+
+            if (cursorFrameRef.current !== null) {
+                window.cancelAnimationFrame(cursorFrameRef.current);
+                cursorFrameRef.current = null;
+            }
         };
     }, [isCustomCursorEnabled]);
 
@@ -334,6 +378,61 @@ export default function WolfSmartLandingPage() {
         setTeamIndex(Math.min(page, maxTeamPage));
     }
 
+    const touchStartX = useRef(0);
+    const touchEndX = useRef(0);
+
+    const handleProjectTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+        touchStartX.current = event.touches[0].clientX;
+    };
+
+    const handleProjectTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+        touchEndX.current = event.touches[0].clientX;
+    };
+
+    const handleProjectTouchEnd = () => {
+        const swipeDistance = touchStartX.current - touchEndX.current;
+        const minSwipeDistance = 50;
+
+        if (swipeDistance > minSwipeDistance) {
+            goToNextProject();
+        }
+
+        if (swipeDistance < -minSwipeDistance) {
+            goToPreviousProject();
+        }
+
+        touchStartX.current = 0;
+        touchEndX.current = 0;
+    };
+
+    const teamTouchStartX = useRef(0);
+    const teamTouchEndX = useRef(0);
+
+    const handleTeamTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+        teamTouchStartX.current = event.touches[0].clientX;
+        teamTouchEndX.current = event.touches[0].clientX;
+    };
+
+    const handleTeamTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+        teamTouchEndX.current = event.touches[0].clientX;
+    };
+
+    const handleTeamTouchEnd = () => {
+        const swipeDistance = teamTouchStartX.current - teamTouchEndX.current;
+        const minSwipeDistance = 50;
+
+        if (swipeDistance > minSwipeDistance) {
+            goToNextTeamPage();
+        }
+
+        if (swipeDistance < -minSwipeDistance) {
+            goToPreviousTeamPage();
+        }
+
+        teamTouchStartX.current = 0;
+        teamTouchEndX.current = 0;
+    };
+
     return (
         <main className={`min-h-screen overflow-x-hidden font-(--font-orbitron) bg-(--bg) text-(--text) transition-colors duration-300 ${isCustomCursorEnabled ? styles.customCursorActive : ""}`}>
             {isCustomCursorEnabled && (
@@ -371,11 +470,11 @@ export default function WolfSmartLandingPage() {
                 <div className="relative z-10 text-center lg:text-left">
                     <div className="mb-8 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
                         <span className="inline-block rounded-sm border border-[rgba(224,64,251,0.3)] px-4 py-1.5 font-(--font-orbitron) text-[0.68rem] tracking-[0.2em] text-(--magenta-light)">
-                            {t.hero.tag}
+                            <strong>{t.hero.tag}</strong>
                         </span>
 
                         <span className="inline-block rounded-sm border border-[rgba(168,85,247,0.25)] px-3 py-1 font-(--font-orbitron) text-[0.65rem] tracking-[0.15em] text-(--purple-light)">
-                            {t.hero.since}
+                            <strong>{t.hero.since}</strong>
                         </span>
                     </div>
 
@@ -385,9 +484,9 @@ export default function WolfSmartLandingPage() {
                             : "text-[clamp(2.2rem,8.5vw,3.5rem)] lg:text-[clamp(2.2rem,3.2vw,4rem)]"
                             }`}
                     >
-                        <span className="block">{t.hero.title1}</span>
-                        <span className="block">{t.hero.title2}</span>
-                        <span className="block bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text text-transparent">
+                        <span className="block font-semibold">{t.hero.title1}</span>
+                        <span className="block font-semibold">{t.hero.title2}</span>
+                        <span className="block bg-linear-to-r font-semibold from-(--purple-light) to-(--magenta-light) bg-clip-text text-transparent">
                             {t.hero.title3}
                         </span>
                     </h1>
@@ -435,7 +534,7 @@ export default function WolfSmartLandingPage() {
             <section id="problema" className="bg-(--bg-alt) px-[max(5%,calc((100vw-1280px)/2))] py-20 transition-colors duration-300">
                 <div className="mx-auto max-w-6xl text-center">
                     <span className="mb-3 block font-(--font-orbitron) text-sm uppercase text-(--magenta)">
-                        {t.problem.tag}
+                        <strong>{t.problem.tag}</strong>
                     </span>
 
                     <h2
@@ -465,12 +564,12 @@ export default function WolfSmartLandingPage() {
                         return (
                             <article
                                 key={card.title}
-                                className="group relative overflow-hidden rounded-xl border border-[rgba(199,36,177,0.18)] bg-(--card) p-7 transition duration-300 hover:-translate-y-1.5 hover:border-[rgba(168,85,247,0.45)] hover:shadow-[0_20px_60px_rgba(123,47,190,0.12)]"
+                                className="group relative overflow-hidden rounded-xl border border-[rgba(199,36,177,0.18)] bg-(--card) p-7 text-center transition duration-300 hover:-translate-y-1.5 hover:border-[rgba(168,85,247,0.45)] hover:shadow-[0_20px_60px_rgba(123,47,190,0.12)] sm:text-left"
                             >
                                 <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-linear-to-r from-(--purple) to-(--magenta) transition-transform duration-300 group-hover:scale-x-100" />
 
                                 <div
-                                    className={`mb-4 flex h-11 w-11 items-center justify-center rounded-lg border border-[rgba(199,36,177,0.3)] ${card.iconBg}`}
+                                    className={`mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-lg border border-[rgba(199,36,177,0.3)] sm:mx-0 ${card.iconBg}`}
                                 >
                                     <Icon className={`h-6 w-6 ${card.iconColor}`} />
                                 </div>
@@ -490,67 +589,78 @@ export default function WolfSmartLandingPage() {
                 <p className="mt-12 text-center font-(--font-orbitron) text-sm tracking-wide text-(--purple-light) md:text-base">
                     {t.problem.final}
                 </p>
+
+                <div className="mt-6 flex justify-center">
+                    <Link
+                        href={withLanguageHref("/contact", activeLanguage)}
+                        className="inline-block rounded bg-linear-to-r from-(--purple) to-(--magenta) px-5 py-2 text-sm font-semibold text-white no-underline transition hover:-translate-y-0.5 hover:opacity-85"
+                    >
+                        {t.nav.cta}
+                    </Link>
+                </div>
             </section>
 
-            <section id="solucao" className="grid items-center gap-16 bg-(--bg) px-[max(5%,calc((100vw-1280px)/2))] py-24 transition-colors duration-300 lg:grid-cols-2">
-                <div>
-                    <span className="mb-3 block font-(--font-orbitron) text-[0.65rem] uppercase tracking-[0.2em] text-(--magenta)">
-                        {t.solution.tag}
-                    </span>
+            <section id="solucao" className="bg-(--bg) px-[max(5%,calc((100vw-1280px)/2))] py-24 transition-colors duration-300">
+                <span className="mb-8 block text-center font-(--font-orbitron) text-sm uppercase tracking-[0.2em] text-(--magenta)">
+                    <strong>{t.solution.tag}</strong>
+                </span>
 
-                    <h2 className="mb-5 font-(--font-orbitron) text-[clamp(1.8rem,3.2vw,2.8rem)] text-(--text)">
-                        {t.solution.title}{" "}
-                        <span className="bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text text-transparent">
-                            {t.solution.titleAccent}
-                        </span>
-                    </h2>
+                <div className="grid items-center gap-16 lg:grid-cols-2">
+                    <div className="text-center lg:text-left">
+                        <h2 className="mb-5 font-(--font-orbitron) text-[clamp(1.8rem,3.2vw,2.8rem)] text-(--text)">
+                            {t.solution.title}{" "}
+                            <span className="bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text text-transparent">
+                                {t.solution.titleAccent}
+                            </span>
+                        </h2>
 
-                    <p className="max-w-2xl text-base text-(--text-muted) md:text-lg">
-                        {t.solution.description}
-                    </p>
+                        <p className="mx-auto max-w-2xl text-base text-(--text-muted) md:text-lg lg:mx-0">
+                            {t.solution.description}
+                        </p>
 
-                    <ul className="mt-8 flex list-none flex-col gap-4">
-                        {t.solution.benefits.map((benefit) => (
-                            <li
-                                key={benefit}
-                                className="flex items-center gap-3 text-base text-(--text) md:text-lg"
-                            >
-                                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-linear-to-r from-(--purple) to-(--magenta) text-white">
-                                    <Check size={13} strokeWidth={3} />
-                                </span>
+                        <ul className="mx-auto mt-8 flex max-w-fit list-none flex-col gap-4 text-left lg:mx-0">
+                            {t.solution.benefits.map((benefit) => (
+                                <li
+                                    key={benefit}
+                                    className="flex items-center gap-3 text-base text-(--text) md:text-lg"
+                                >
+                                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-linear-to-r from-(--purple) to-(--magenta) text-white">
+                                        <Check size={13} strokeWidth={3} />
+                                    </span>
 
-                                <span>{benefit}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                                    <span>{benefit}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
-                <div className="relative overflow-hidden rounded-xl border border-(--border) bg-(--card) p-8 transition-colors duration-300 md:p-10">
-                    <div className="pointer-events-none absolute -right-1/2 -top-1/2 h-[200%] w-[200%] bg-[radial-gradient(ellipse,rgba(123,47,190,0.12)_0%,transparent_60%)]" />
+                    <div className="relative overflow-hidden rounded-xl border border-(--border) bg-(--card) p-8 transition-colors duration-300 md:p-10">
+                        <div className="pointer-events-none absolute -right-1/2 -top-1/2 h-[200%] w-[200%] bg-[radial-gradient(ellipse,rgba(123,47,190,0.12)_0%,transparent_60%)]" />
 
-                    <div className="relative grid grid-cols-2 gap-5">
-                        {localizedSolutionStats.map((stat) => (
-                            <div
-                                key={stat.label}
-                                className="rounded-lg border border-(--border) bg-(--stat-bg) p-6 text-center transition-colors duration-300"
-                            >
-                                <div className="bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text font-(--font-orbitron) text-3xl text-transparent md:text-4xl">
-                                    {stat.value}
+                        <div className="relative grid grid-cols-2 gap-5">
+                            {localizedSolutionStats.map((stat) => (
+                                <div
+                                    key={stat.label}
+                                    className="rounded-lg border border-(--border) bg-(--stat-bg) p-6 text-center transition-colors duration-300"
+                                >
+                                    <div className="bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text font-(--font-orbitron) text-3xl text-transparent md:text-4xl">
+                                        {stat.value}
+                                    </div>
+
+                                    <div className="mt-2 text-xs text-(--text-muted) md:text-sm">
+                                        {stat.label}
+                                    </div>
                                 </div>
-
-                                <div className="mt-2 text-xs text-(--text-muted) md:text-sm">
-                                    {stat.label}
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
 
             <section id="servicos" className="bg-(--bg-alt) px-[max(5%,calc((100vw-1280px)/2))] py-24 transition-colors duration-300">
                 <div className="mx-auto max-w-7xl text-center">
-                    <span className="mb-3 block font-(--font-orbitron) text-[0.65rem] uppercase tracking-[0.2em] text-(--magenta)">
-                        {t.services.tag}
+                    <span className="mb-3 block font-(--font-orbitron) text-sm uppercase tracking-[0.2em] text-(--magenta)">
+                        <strong>{t.services.tag}</strong>
                     </span>
 
                     <h2
@@ -576,7 +686,7 @@ export default function WolfSmartLandingPage() {
                     {localizedServiceCards.map((service) => (
                         <article
                             key={service.title}
-                            className="group relative overflow-hidden rounded-xl border border-(--border) bg-(--card) p-8 transition duration-300 hover:-translate-y-1.5 hover:border-[rgba(168,85,247,0.45)] hover:shadow-[0_20px_60px_rgba(123,47,190,0.12)]"
+                            className="group relative overflow-hidden rounded-xl border border-(--border) bg-(--card) p-8 text-center transition duration-300 hover:-translate-y-1.5 hover:border-[rgba(168,85,247,0.45)] hover:shadow-[0_20px_60px_rgba(123,47,190,0.12)] sm:text-left"
                         >
                             <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-linear-to-r from-(--purple) to-(--magenta) transition-transform duration-300 group-hover:scale-x-100" />
 
@@ -584,7 +694,7 @@ export default function WolfSmartLandingPage() {
                                 const ServiceIcon = service.icon;
 
                                 return (
-                                    <span className={`mb-5 block ${service.iconColor}`}>
+                                    <span className={`mx-auto mb-5 block w-fit sm:mx-0 ${service.iconColor}`}>
                                         <ServiceIcon className="h-8 w-8" />
                                     </span>
                                 );
@@ -598,13 +708,13 @@ export default function WolfSmartLandingPage() {
                                 {service.description}
                             </p>
 
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
                                 {service.tags.map((tag) => (
                                     <span
                                         key={tag}
                                         className="inline-block rounded-sm border border-[rgba(224,64,251,0.25)] px-3 py-1 text-[0.7rem] tracking-wider text-(--magenta-light)"
                                     >
-                                        {tag}
+                                        <strong>{tag}</strong>
                                     </span>
                                 ))}
                             </div>
@@ -616,7 +726,7 @@ export default function WolfSmartLandingPage() {
             <section id="projetos" className="bg-(--bg-alt) px-[max(5%,calc((100vw-1280px)/2))] py-24 transition-colors duration-300">
                 <div className="mx-auto max-w-3xl text-center">
                     <span className="mb-3 block font-(--font-orbitron) text-sm uppercase text-(--magenta)">
-                        {t.projects.tag}
+                        <strong>{t.projects.tag}</strong>
                     </span>
 
                     <h2 className="mb-5 font-(--font-orbitron) text-[clamp(1.8rem,3.2vw,2.8rem)] text-(--text)">
@@ -631,7 +741,11 @@ export default function WolfSmartLandingPage() {
                     </p>
                 </div>
 
-                <div className="mt-12 overflow-x-hidden overflow-y-visible py-4">
+                <div className="mt-12 touch-pan-y overflow-x-hidden overflow-y-visible py-4"
+                    onTouchStart={handleProjectTouchStart}
+                    onTouchMove={handleProjectTouchMove}
+                    onTouchEnd={handleProjectTouchEnd}
+                >
                     <div
                         className="flex py-2 transition-transform duration-500 ease-out"
                         style={{
@@ -775,7 +889,7 @@ export default function WolfSmartLandingPage() {
             <section id="stack" className="overflow-hidden bg-(--bg) px-[max(5%,calc((100vw-1280px)/2))] py-24 transition-colors duration-300">
                 <div className="mx-auto max-w-3xl text-center">
                     <span className="mb-3 block font-(--font-orbitron) text-sm uppercase tracking-[0.2em] text-(--magenta)">
-                        {t.stack.tag}
+                        <strong>{t.stack.tag}</strong>
                     </span>
 
                     <h2 className="mb-5 font-(--font-orbitron) text-[clamp(1.8rem,3.2vw,2.8rem)] text-(--text)">
@@ -804,9 +918,11 @@ export default function WolfSmartLandingPage() {
                                     <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-linear-to-r from-(--purple) to-(--magenta) transition-transform duration-300 group-hover:scale-x-100" />
 
                                     <div className="flex h-9 w-9 items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                                        <img
-                                            src={theme === "light" && "iconLight" in tech ? tech.iconLight : tech.icon}
+                                        <Image
+                                            src={theme === "light" && "iconLight" in tech && tech.iconLight ? tech.iconLight : tech.icon}
                                             alt={tech.name}
+                                            width={32}
+                                            height={32}
                                             className="h-8 w-8 object-contain"
                                         />
                                     </div>
@@ -829,7 +945,7 @@ export default function WolfSmartLandingPage() {
             <section id="processo" className="bg-(--bg) px-[max(5%,calc((100vw-1280px)/2))] py-24 text-center transition-colors duration-300">
                 <div className="mx-auto max-w-3xl">
                     <span className="mb-3 block font-(--font-orbitron) text-sm uppercase text-(--magenta)">
-                        {t.process.tag}
+                        <strong>{t.process.tag}</strong>
                     </span>
 
                     <h2 className="font-(--font-orbitron) text-[clamp(1.8rem,3.2vw,2.8rem)] text-(--text)">
@@ -871,7 +987,7 @@ export default function WolfSmartLandingPage() {
             <section id="diferenciais" className="bg-(--bg-alt) px-[max(5%,calc((100vw-1280px)/2))] py-24 transition-colors duration-300">
                 <div className="mx-auto max-w-3xl text-center">
                     <span className="mb-3 block font-(--font-orbitron) text-sm uppercase text-(--magenta)">
-                        {t.differentials.tag}
+                        <strong>{t.differentials.tag}</strong>
                     </span>
 
                     <h2 className="font-(--font-orbitron) text-[clamp(1.8rem,3.2vw,2.8rem)] text-(--text)">
@@ -886,7 +1002,7 @@ export default function WolfSmartLandingPage() {
                     {localizedDifferentialCards.map((card) => (
                         <article
                             key={card.title}
-                            className="group relative overflow-hidden rounded-xl border border-(--border) bg-(--card) p-6 transition duration-300 hover:-translate-y-1.5 hover:border-[rgba(168,85,247,0.45)] hover:shadow-[0_20px_60px_rgba(123,47,190,0.12)]"
+                            className="group relative overflow-hidden rounded-xl border border-(--border) bg-(--card) p-6 text-center transition duration-300 hover:-translate-y-1.5 hover:border-[rgba(168,85,247,0.45)] hover:shadow-[0_20px_60px_rgba(123,47,190,0.12)]"
                         >
                             <div className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-linear-to-r from-(--purple) to-(--magenta) transition-transform duration-300 group-hover:scale-x-100" />
 
@@ -918,7 +1034,7 @@ export default function WolfSmartLandingPage() {
             <section id="taskforce" className="bg-(--bg) px-[max(5%,calc((100vw-1280px)/2))] py-24 transition-colors duration-300">
                 <div className="mx-auto max-w-3xl text-center">
                     <span className="mb-3 block font-(--font-orbitron) text-sm uppercase text-(--magenta)">
-                        {t.taskforce.tag}
+                        <strong>{t.taskforce.tag}</strong>
                     </span>
 
                     <h2 className="mb-5 font-(--font-orbitron) text-[clamp(1.8rem,3.2vw,2.8rem)] text-(--text)">
@@ -964,7 +1080,7 @@ export default function WolfSmartLandingPage() {
             <section id="equipa" className="bg-(--bg) px-[max(5%,calc((100vw-1280px)/2))] py-24 transition-colors duration-300">
                 <div className="mx-auto max-w-3xl text-center">
                     <span className="mb-3 block font-(--font-orbitron) text-sm uppercase text-(--magenta)">
-                        {t.team.tag}
+                        <strong>{t.team.tag}</strong>
                     </span>
 
                     <h2 className="mb-5 font-(--font-orbitron) text-[clamp(1.8rem,3.2vw,2.8rem)] text-(--text)">
@@ -979,7 +1095,12 @@ export default function WolfSmartLandingPage() {
                     </p>
                 </div>
 
-                <div className="mx-auto mt-12 max-w-6xl overflow-x-hidden overflow-y-visible py-4">
+                <div
+                    className="mx-auto mt-12 max-w-6xl touch-pan-y overflow-x-hidden overflow-y-visible py-4"
+                    onTouchStart={handleTeamTouchStart}
+                    onTouchMove={handleTeamTouchMove}
+                    onTouchEnd={handleTeamTouchEnd}
+                >
                     <div
                         className="flex py-2 transition-transform duration-500 ease-out"
                         style={{
@@ -1068,7 +1189,7 @@ export default function WolfSmartLandingPage() {
             <section id="certificados" className="bg-(--bg-alt) px-[max(5%,calc((100vw-1280px)/2))] py-20 transition-colors duration-300">
                 <div className="mx-auto max-w-3xl text-center">
                     <span className="mb-2 block font-(--font-orbitron) text-md uppercase text-(--magenta)">
-                        {t.certifications.tag}
+                        <strong>{t.certifications.tag}</strong>
                     </span>
 
                     <p className="text-sm text-(--text-muted)">
@@ -1177,7 +1298,7 @@ export default function WolfSmartLandingPage() {
             <section id="testemunhos" className="bg-(--bg) px-[max(5%,calc((100vw-1280px)/2))] py-24 transition-colors duration-300">
                 <div className="mx-auto max-w-3xl text-center">
                     <span className="mb-3 block font-(--font-orbitron) text-sm uppercase text-(--magenta)">
-                        {t.testimonials.tag}
+                        <strong>{t.testimonials.tag}</strong>
                     </span>
 
                     <h2 className="font-(--font-orbitron) text-[clamp(1.8rem,3.2vw,2.8rem)] text-(--text)">
@@ -1242,7 +1363,7 @@ export default function WolfSmartLandingPage() {
             <section id="mapa-clientes" className="bg-(--bg-alt) px-[max(5%,calc((100vw-1280px)/2))] py-24 transition-colors duration-300">
                 <div className="mx-auto max-w-3xl text-center">
                     <span className="mb-3 block font-(--font-orbitron) text-sm uppercase text-(--magenta)">
-                        {t.map.tag}
+                        <strong>{t.map.tag}</strong>
                     </span>
 
                     <h2 className="mb-5 font-(--font-orbitron) text-[clamp(1.8rem,3.2vw,2.8rem)] text-(--text)">
@@ -1293,7 +1414,7 @@ export default function WolfSmartLandingPage() {
 
                 <div className="relative z-10 mx-auto max-w-4xl">
                     <span className="mb-5 block font-(--font-orbitron) text-sm uppercase text-(--magenta)">
-                        {t.cta.tag}
+                        <strong>{t.cta.tag}</strong>
                     </span>
 
                     <h2 className="mx-auto mb-6 max-w-5xl font-(--font-orbitron) text-[clamp(2rem,4.2vw,4rem)] tracking-tight text-(--text)">

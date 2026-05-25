@@ -21,9 +21,12 @@
     background: var(--magenta-light);
     border-radius: 9999px;
     position: fixed;
+    left: 0;
+    top: 0;
     pointer-events: none;
     z-index: 99999;
-    transform: translate(-50%, -50%);
+    transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
+    will-change: transform;
 }
 
 .cursorRing {
@@ -32,10 +35,13 @@
     border: 1px solid rgba(224, 64, 251, 0.5);
     border-radius: 9999px;
     position: fixed;
+    left: 0;
+    top: 0;
     pointer-events: none;
     z-index: 99998;
-    transform: translate(-50%, -50%);
+    transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
     transition: width 0.2s, height 0.2s;
+    will-change: transform;
 }
 
 .customCursorActive,

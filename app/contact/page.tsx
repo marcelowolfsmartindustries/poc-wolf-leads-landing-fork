@@ -338,7 +338,7 @@ export default function ContactPage() {
 
                 <div className={`relative z-10 mx-auto max-w-4xl text-center ${styles.fadeIn}`}>
                     <span className="mb-8 inline-block rounded-sm border border-[rgba(224,64,251,0.3)] px-4 py-1.5 font-(--font-orbitron) text-sm text-(--magenta-light)">
-                        {t.hero.tag}
+                        <strong>{t.hero.tag}</strong>
                     </span>
 
                     <h1
@@ -347,9 +347,9 @@ export default function ContactPage() {
                             : "text-[clamp(1rem,5vw,3.5rem)] md:text-[clamp(2.2rem,4vw,5rem)]"
                             }`}
                     >
-                        <span className="block whitespace-nowrap">{t.hero.title1}</span>
-                        <span className="block whitespace-nowrap text-(--text-muted)">{t.hero.title2}</span>
-                        <span className="block whitespace-nowrap bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text pb-2 text-transparent">
+                        <span className="block font-semibold whitespace-nowrap">{t.hero.title1}</span>
+                        <span className="block font-semibold whitespace-nowrap text-(--text-muted)">{t.hero.title2}</span>
+                        <span className="block font-semibold whitespace-nowrap bg-linear-to-r from-(--purple-light) to-(--magenta-light) bg-clip-text pb-2 text-transparent">
                             {t.hero.titleAccent}
                         </span>
                     </h1>
@@ -363,7 +363,7 @@ export default function ContactPage() {
             <section id="contacto" className="bg-(--bg-alt) px-[max(5%,calc((100vw-1280px)/2))] py-24 transition-colors duration-300">
                 <div className={`mx-auto max-w-3xl text-center ${styles.fadeIn}`}>
                     <span className="mb-3 block font-(--font-orbitron) text-sm uppercase text-(--magenta)">
-                        {t.form.tag}
+                        <strong>{t.form.tag}</strong>
                     </span>
 
                     <h2 className="mb-5 font-(--font-orbitron) text-[clamp(1.8rem,3.2vw,2.8rem)] leading-tight text-(--text)">
